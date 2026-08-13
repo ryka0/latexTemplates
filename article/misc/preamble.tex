@@ -1,0 +1,20 @@
+%!TEX root = ../main.tex
+
+\usepackage{setspace,microtype,xcolor}
+\usepackage[
+  backend=biber,
+  style=numeric,
+  sorting=nyt,
+  giveninits=true,
+  maxnames=99,
+  minnames=99,
+  isbn=false,
+  datamodel=misc/mydatamodel,
+]{biblatex}
+\addbibresource{misc/refs.bib}
+
+\definecolor{myBlue}{HTML}{1565C0}
+\usepackage[bookmarks, colorlinks=true, linkcolor=black, citecolor=myBlue, urlcolor=magenta]{hyperref}
+\usepackage{quiver,amsmath,amsthm,amssymb,xy,graphicx,fancyvrb,semantex,enumerate,enumitem}
+\usepackage[top=1.25in, bottom=1.25in, left=1in, right=1in]{geometry}
+

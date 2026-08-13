@@ -1,0 +1,4 @@
+% Custom biblatex data model: register the "mrnumber" field used in
+% misc/refs.bib so biber doesn't silently drop it.
+\DeclareDatamodelFields[type=field, datatype=literal]{mrnumber}
+\DeclareDatamodelEntryfields{mrnumber}

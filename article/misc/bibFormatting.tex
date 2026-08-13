@@ -1,0 +1,152 @@
+%!TEX root = ../main.tex
+%
+% Bibliography formatting to make the biblatex output look like the old
+% amsrefs [shortalphabetic, initials, nobysame] bibliography: comma
+% separated fields, no quotes around titles, no "In:", bold journal
+% volumes vs. "vol. N" for books/collections (with the volume placed
+% after the series name), "vol (year), no. N, pages", and DOI/MR
+% appended AMS-style instead of ISSN.
+%
+% Must be \input AFTER misc/preamble.tex: it needs biblatex (and its
+% commands like \DeclareFieldFormat/\renewbibmacro) already loaded.
+
+\renewcommand*{\newunitpunct}{\addcomma\space}
+\renewbibmacro{in:}{}
+\DeclareFieldFormat
+  [article, incollection, inproceedings, unpublished]
+  {title}{\mkbibemph{#1}}
+\DeclareFieldFormat{journaltitle}{#1}
+% biblatex core already splits "volume" formatting by entrytype: a generic
+% one (used by books/incollections) and an [article,periodical]-specific
+% one that overrides it for articles. Both need setting explicitly.
+\DeclareFieldFormat{volume}{vol.\space#1}
+\DeclareFieldFormat[article, periodical]{volume}{\mkbibbold{#1}}
+\renewbibmacro*{journal+issuetitle}{%
+  \usebibmacro{journal}%
+  \setunit*{\addspace}%
+  \iffieldundef{series}
+    {}
+    {\newunit\printfield{series}\setunit{\addspace}}%
+  \printfield{volume}%
+  \setunit{\addspace}%
+  \printtext[parens]{\printfield{year}}%
+  \iffieldundef{number}
+    {}
+    {\setunit{\addcomma\space}%
+     \printtext{no.\addspace\printfield{number}}}%
+  \newunit}
+\DeclareFieldFormat{pages}{#1}
+\DeclareFieldFormat[incollection]{pages}{pp.\space#1}
+% Books store their page count (e.g. "xii+635") in the "pages" field too,
+% but that's not wanted in the rendered bibliography, so drop it entirely.
+\AtEveryBibitem{\ifentrytype{book}{\clearfield{pages}}{}}
+\DeclareFieldFormat{doi}{DOI~\href{https://doi.org/#1}{\nolinkurl{#1}}}
+\DeclareFieldFormat{mrnumber}{MR~#1}
+\renewcommand*{\finentrypunct}{%
+  \iffieldundef{mrnumber}{\addperiod}{}}
+\renewbibmacro*{finentry}{%
+  \iffieldundef{mrnumber}
+    {}
+    {\setunit{\adddot\space}\printfield{mrnumber}}%
+  \finentry}
+
+% Put the series name before the volume number for book-like entries
+% (default biblatex order is volume, then series). Copied verbatim from
+% biblatex's bbx/standard.bbx "book"/"incollection" drivers, with the
+% "series+number" macro moved ahead of the volume/part/volumes fields.
+\DeclareBibliographyDriver{book}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{author/editor+others/translator+others}%
+  \setunit{\printdelim{nametitledelim}}\newblock
+  \usebibmacro{maintitle+title}%
+  \newunit
+  \printlist{language}%
+  \newunit\newblock
+  \usebibmacro{byauthor}%
+  \newunit\newblock
+  \usebibmacro{byeditor+others}%
+  \newunit\newblock
+  \printfield{edition}%
+  \newunit\newblock
+  \usebibmacro{series+number}%
+  \newunit
+  \iffieldundef{maintitle}
+    {\printfield{volume}%
+     \printfield{part}}
+    {}%
+  \newunit
+  \printfield{volumes}%
+  \newunit\newblock
+  \printfield{note}%
+  \newunit\newblock
+  \usebibmacro{publisher+location+date}%
+  \newunit\newblock
+  \usebibmacro{chapter+pages}%
+  \newunit
+  \printfield{pagetotal}%
+  \newunit\newblock
+  \iftoggle{bbx:isbn}
+    {\printfield{isbn}}
+    {}%
+  \newunit\newblock
+  \usebibmacro{doi+eprint+url}%
+  \newunit\newblock
+  \usebibmacro{addendum+pubstate}%
+  \setunit{\bibpagerefpunct}\newblock
+  \usebibmacro{pageref}%
+  \newunit\newblock
+  \iftoggle{bbx:related}
+    {\usebibmacro{related:init}%
+     \usebibmacro{related}}
+    {}%
+  \usebibmacro{finentry}}
+
+\DeclareBibliographyDriver{incollection}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{author/translator+others}%
+  \setunit{\printdelim{nametitledelim}}\newblock
+  \usebibmacro{title}%
+  \newunit
+  \printlist{language}%
+  \newunit\newblock
+  \usebibmacro{byauthor}%
+  \newunit\newblock
+  \usebibmacro{in:}%
+  \usebibmacro{maintitle+booktitle}%
+  \newunit\newblock
+  \usebibmacro{byeditor+others}%
+  \newunit\newblock
+  \printfield{edition}%
+  \newunit\newblock
+  \usebibmacro{series+number}%
+  \newunit
+  \iffieldundef{maintitle}
+    {\printfield{volume}%
+     \printfield{part}}
+    {}%
+  \newunit
+  \printfield{volumes}%
+  \newunit\newblock
+  \printfield{note}%
+  \newunit\newblock
+  \usebibmacro{publisher+location+date}%
+  \newunit\newblock
+  \usebibmacro{chapter+pages}%
+  \newunit\newblock
+  \iftoggle{bbx:isbn}
+    {\printfield{isbn}}
+    {}%
+  \newunit\newblock
+  \usebibmacro{doi+eprint+url}%
+  \newunit\newblock
+  \usebibmacro{addendum+pubstate}%
+  \setunit{\bibpagerefpunct}\newblock
+  \usebibmacro{pageref}%
+  \newunit\newblock
+  \iftoggle{bbx:related}
+    {\usebibmacro{related:init}%
+     \usebibmacro{related}}
+    {}%
+  \usebibmacro{finentry}}
